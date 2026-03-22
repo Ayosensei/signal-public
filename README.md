@@ -1,16 +1,41 @@
-# React + Vite
+# 🟢 SIGNAL — Match-3 Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Signal** is a premium, dark-themed match-3 web game built with **React** and **Vite**. It features an 8x8 grid, 6 distinct tile types, and a responsive interaction system supporting clicks, desktop dragging, and mobile swiping.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **8x8 Grid**: A spacious board for complex patterns and large cascades.
+- **Recursive Match System**: Experience satisfying cascading matches as tiles fall to fill the gaps.
+- **Multi-Input Support**:
+  - **Click/Tap**: Traditional selection and swap.
+  - **Drag & Drop**: Desktop-native dragging logic.
+  - **Swipe Logic**: Intuitive touch gestures for mobile devices.
+- **Dark Cinematic Aesthetic**: A premium UI with glowing accents (`#00FF41`) and smooth transitions.
+- **Dynamic Difficulty**: Balanced with 6 distinct tile types for a strategic gameplay experience.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React 18+
+- **Build Tool**: Vite
+- **Styling**: Vanilla CSS (Custom properties & CSS Grid)
 
-## Expanding the ESLint configuration
+## 🏁 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1.  **Clone the repository**
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Run the development server**:
+    ```bash
+    npm run dev
+    ```
+
+## 🏗️ Project Architecture
+
+- `src/App.jsx`: Main game logic including state management, match detection, and interaction handlers.
+- `src/index.css`: Core design system, grid layout, and tile animations.
+- `Signal.md`: Original MVP development breakdown and roadmap.
+
+---
+Built by **Antigravity**.
