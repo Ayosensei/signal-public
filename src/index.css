@@ -8,6 +8,8 @@
   --tile-2: #FFB84B; /* Yellow */
   --tile-3: #B84BFF; /* Purple */
   --tile-4: #4BFFB8; /* Cyan */
+  --tile-5: #FF4BD8; /* Pink */
+  --tile-6: #9FFF4B; /* Lime */
 }
 
 * {
@@ -87,6 +89,8 @@ body {
 .tile-2 { background: var(--tile-2); box-shadow: 0 0 15px rgba(255, 184, 75, 0.3); }
 .tile-3 { background: var(--tile-3); box-shadow: 0 0 15px rgba(184, 75, 255, 0.3); }
 .tile-4 { background: var(--tile-4); box-shadow: 0 0 15px rgba(75, 255, 184, 0.3); }
+.tile-5 { background: var(--tile-5); box-shadow: 0 0 15px rgba(255, 75, 216, 0.3); }
+.tile-6 { background: var(--tile-6); box-shadow: 0 0 15px rgba(159, 255, 75, 0.3); }
 
 .tile::after {
   content: '';

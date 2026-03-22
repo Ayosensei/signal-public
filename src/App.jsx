@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import './index.css'
 
 const GRID_SIZE = 8
-const TILE_TYPES = 5
+const TILE_TYPES = 6
 
 function App() {
   const [grid, setGrid] = useState([])
