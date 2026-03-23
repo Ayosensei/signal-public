@@ -11,6 +11,16 @@ import './index.css'
 const GRID_SIZE = 8
 const TILE_TYPES = 6
 
+// --- Constants ---
+const TILE_ASSETS = [
+  'Alpha.png',
+  'Clover.png',
+  'Eyes.png',
+  'Lightbulb.png',
+  'Mr Observer.png',
+  'Signal Node.png'
+]
+
 function App() {
   // --- [STATE] ---
   const [view, setView] = useState('splash') // Current View: 'splash', 'game', 'about'
@@ -422,16 +432,8 @@ function App() {
             {grid.map((row, r) => (
               row.map((tile, c) => {
                 const isSelected = selectedTile?.r === r && selectedTile?.c === c
-                // Map tile types to custom asset filenames
-                const tileAssets = [
-                  'Alpha.png',
-                  'Clover.png',
-                  'Eyes.png',
-                  'Lightbulb.png',
-                  'Mr Observer.png',
-                  'Signal Node.png'
-                ]
-
+                const hasTag = r === 0 && c === 7 
+                
                 return (
                   <div
                     key={`${r}-${c}`}
@@ -449,7 +451,7 @@ function App() {
                     <div className="tile-icon">
                       {tile !== null && (
                         <img
-                          src={`/tiles/${tileAssets[tile]}`}
+                          src={`/tiles/${TILE_ASSETS[tile]}`}
                           alt={`Tile ${tile}`}
                           className="tile-img"
                         />
