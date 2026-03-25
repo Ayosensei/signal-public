@@ -594,3 +594,110 @@ body {
   right: 0;
   z-index: 100;
 }
+/* Mode Selection Styles */
+.mode-selection {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.mode-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0.6rem 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.1rem;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.mode-btn.active {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+}
+
+/* Game Stats Styles */
+.game-timer, .game-moves {
+  font-size: 1rem;
+  color: var(--primary-green);
+  font-weight: 700;
+  letter-spacing: 0.05rem;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+/* Game Over Overlay */
+.board-container {
+  position: relative;
+}
+
+.game-over-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(11, 11, 11, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  border-radius: 20px;
+  border: 1px solid var(--primary-green);
+  box-shadow: 0 0 50px rgba(0, 255, 65, 0.2);
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.game-over-overlay h2 {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  letter-spacing: 0.2rem;
+  text-shadow: 0 0 30px rgba(0, 255, 65, 0.6);
+}
+
+.game-over-overlay p {
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.game-over-overlay button {
+  background: var(--primary-green);
+  color: black;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 900;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.game-over-overlay button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+}
+
+.app-container.game-over .board {
+  filter: blur(5px);
+  pointer-events: none;
+}
