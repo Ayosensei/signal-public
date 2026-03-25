@@ -789,3 +789,53 @@ body {
   text-align: center;
   cursor: pointer;
 }
+
+/* Special Tile Styles */
+.tile.special-linear-h::after,
+.tile.special-linear-v::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+  background-size: 100% 10px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.tile.special-linear-v::after {
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+  background-size: 10px 100%;
+}
+
+.tile.special-pulse {
+  animation: pulseSpecial 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseSpecial {
+  0% { box-shadow: 0 0 10px var(--tile-glow); }
+  50% { box-shadow: 0 0 30px var(--tile-glow), inset 0 0 15px var(--tile-glow); }
+  100% { box-shadow: 0 0 10px var(--tile-glow); }
+}
+
+.tile.special-observer {
+  border-width: 2px;
+  animation: observerGlow 3s infinite alternate;
+}
+
+@keyframes observerGlow {
+  0% { border-color: #FA5128; box-shadow: 0 0 20px #FA5128; }
+  25% { border-color: #37A834; box-shadow: 0 0 20px #37A834; }
+  50% { border-color: #60A5FA; box-shadow: 0 0 20px #60A5FA; }
+  75% { border-color: #FACC15; box-shadow: 0 0 20px #FACC15; }
+  100% { border-color: #C084FC; box-shadow: 0 0 20px #C084FC; }
+}
+
+/* Activation Effects (Placeholder for future JS-triggered animations) */
+.cleared {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(0);
+  opacity: 0;
+}

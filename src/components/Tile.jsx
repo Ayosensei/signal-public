@@ -26,7 +26,7 @@ const Tile = ({
 
   return (
     <div
-      className={`tile tile-${tileType} ${isSelected ? 'selected' : ''} ${tile === null ? 'cleared' : ''}`}
+      className={`tile tile-${tileType} ${tile?.special ? 'special-' + tile.special : ''} ${isSelected ? 'selected' : ''} ${tile === null ? 'cleared' : ''}`}
       onClick={() => onClick(r, c)}
       draggable={!isProcessing}
       onDragStart={(e) => onDragStart(e, r, c)}

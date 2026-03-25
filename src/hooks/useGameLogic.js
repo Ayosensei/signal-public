@@ -13,7 +13,6 @@ export const useGameLogic = (mode = 'observation') => {
   const [isGameOver, setIsGameOver] = useState(false)
 
   const findMatchGroups = useCallback((currentGrid) => {
-    // ... (rest of findMatchGroups remains the same)
     const horizontalMatches = []
     const verticalMatches = []
 
@@ -68,6 +67,8 @@ export const useGameLogic = (mode = 'observation') => {
       const type = currentGrid[allLines[i][0].r][allLines[i][0].c].type
       let addedToGroup = true
 
+      const linesInCurrentGroup = [allLines[i]]
+
       while (addedToGroup) {
         addedToGroup = false
         for (let j = i + 1; j < allLines.length; j++) {
@@ -78,21 +79,29 @@ export const useGameLogic = (mode = 'observation') => {
           const hasIntersection = allLines[j].some(pt => currentGroup.has(`${pt.r},${pt.c}`))
           if (hasIntersection) {
             allLines[j].forEach(pt => currentGroup.add(`${pt.r},${pt.c}`))
+            linesInCurrentGroup.push(allLines[j])
             visitedIndices.add(j)
             addedToGroup = true
           }
         }
       }
 
+      // Metadata for special tile spawning
+      const groupCoords = Array.from(currentGroup).map(str => {
+        const [r, c] = str.split(',').map(Number)
+        return { r, c }
+      })
+
+      const maxLineLength = Math.max(...linesInCurrentGroup.map(l => l.length))
+      const hasIntersection = linesInCurrentGroup.length > 1 && 
+        horizontalMatches.some(h => linesInCurrentGroup.includes(h)) && 
+        verticalMatches.some(v => linesInCurrentGroup.includes(v))
+
       groups.push({
-        coords: Array.from(currentGroup).map(str => {
-          const [r, c] = str.split(',').map(Number)
-          return { r, c }
-        }),
+        coords: groupCoords,
         type: type,
-        linesInvolved: horizontalMatches.filter(l => l.some(pt => currentGroup.has(`${pt.r},${pt.c}`))).length +
-          verticalMatches.filter(l => l.some(pt => currentGroup.has(`${pt.r},${pt.c}`))).length,
-        maxLength: Math.max(...allLines.filter(l => l.some(pt => currentGroup.has(`${pt.r},${pt.c}`))).map(l => l.length))
+        maxLineLength,
+        hasIntersection
       })
     }
 
@@ -139,8 +148,49 @@ export const useGameLogic = (mode = 'observation') => {
     setIsGameOver(false)
   }, [findMatchGroups])
 
-  // Define logic functions inside the hook but not as useCallbacks to avoid closure issues
-  // We will wrap the public entry points in useCallback
+  const activateSpecial = async (currentGrid, r, c, tileType) => {
+    const tile = currentGrid[r][c]
+    if (!tile || !tile.special) return currentGrid
+
+    const newGrid = currentGrid.map(row => [...row])
+    newGrid[r][c] = null // Consume the special tile
+
+    let coordsToClear = []
+
+    if (tile.special === 'linear-h') {
+      for (let i = 0; i < GRID_SIZE; i++) coordsToClear.push({ r, c: i })
+    } else if (tile.special === 'linear-v') {
+      for (let i = 0; i < GRID_SIZE; i++) coordsToClear.push({ r: i, c })
+    } else if (tile.special === 'pulse') {
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          const nr = r + dr, nc = c + dc
+          if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) coordsToClear.push({ r: nr, c: nc })
+        }
+      }
+    } else if (tile.special === 'observer') {
+      const randomType = tileType !== undefined ? tileType : Math.floor(Math.random() * NORMAL_TILE_TYPES)
+      for (let i = 0; i < GRID_SIZE; i++) {
+        for (let j = 0; j < GRID_SIZE; j++) {
+          if (newGrid[i][j]?.type === randomType) coordsToClear.push({ r: i, c: j })
+        }
+      }
+    }
+
+    coordsToClear.forEach(({ r: cr, c: cc }) => {
+      if (newGrid[cr][cc]) {
+        // Recursively activate if we hit another special tile
+        if (newGrid[cr][cc].special && (cr !== r || cc !== c)) {
+          // This would be complex to handle async here, so we'll just mark it for clearing
+          // and the next gravity/refill cycle will handle consequences
+        }
+        newGrid[cr][cc] = null
+      }
+    })
+
+    return newGrid
+  }
+
   const runMatches = async (currentGrid, swapPos1 = null, swapPos2 = null) => {
     const groups = findMatchGroups(currentGrid)
     if (groups.length === 0) {
@@ -150,14 +200,33 @@ export const useGameLogic = (mode = 'observation') => {
 
     setIsProcessing(true)
 
-    const newGrid = currentGrid.map(row => [...row])
+    let newGrid = currentGrid.map(row => [...row])
     let clearedCount = 0
+
+    // Check for special tiles in the cleared areas BEFORE clearing them
+    for (let r = 0; r < GRID_SIZE; r++) {
+      for (let c = 0; c < GRID_SIZE; c++) {
+        const isMatched = groups.some(g => g.coords.some(pt => pt.r === r && pt.c === c))
+        if (isMatched && newGrid[r][c]?.special) {
+          newGrid = await activateSpecial(newGrid, r, c, newGrid[r][c].type)
+        }
+      }
+    }
 
     groups.forEach(group => {
       clearedCount += group.coords.length
-      let specialToSpawn = group.maxLength >= 5 ? OBSERVER_TYPE : null
-      let spawnCoord = group.coords[0]
+      
+      let specialToSpawn = null
+      if (group.maxLineLength >= 5 && !group.hasIntersection) {
+        specialToSpawn = 'observer'
+      } else if (group.hasIntersection) {
+        specialToSpawn = 'pulse'
+      } else if (group.maxLineLength === 4) {
+        // Randomly choose H or V for now, or based on the line direction
+        specialToSpawn = Math.random() > 0.5 ? 'linear-h' : 'linear-v'
+      }
 
+      let spawnCoord = group.coords[0]
       if (swapPos1 && swapPos2) {
         const inGroup1 = group.coords.some(pt => pt.r === swapPos1.r && pt.c === swapPos1.c)
         const inGroup2 = group.coords.some(pt => pt.r === swapPos2.r && pt.c === swapPos2.c)
@@ -166,11 +235,14 @@ export const useGameLogic = (mode = 'observation') => {
       }
 
       group.coords.forEach(({ r, c }) => {
-        newGrid[r][c] = null
+        if (newGrid[r][c] !== null) newGrid[r][c] = null
       })
 
       if (specialToSpawn !== null) {
-        newGrid[spawnCoord.r][spawnCoord.c] = { type: specialToSpawn, special: null }
+        newGrid[spawnCoord.r][spawnCoord.c] = { 
+          type: specialToSpawn === 'observer' ? OBSERVER_TYPE : group.type, 
+          special: specialToSpawn 
+        }
       }
     })
 
@@ -221,36 +293,37 @@ export const useGameLogic = (mode = 'observation') => {
       return
     }
 
-    const newGrid = grid.map(row => [...row])
-    const temp = newGrid[tile1.r][tile1.c]
-    newGrid[tile1.r][tile1.c] = newGrid[tile2.r][tile2.c]
-    newGrid[tile2.r][tile2.c] = temp
+    let newGrid = grid.map(row => [...row])
+    const t1 = newGrid[tile1.r][tile1.c]
+    const t2 = newGrid[tile2.r][tile2.c]
+    
+    newGrid[tile1.r][tile1.c] = t2
+    newGrid[tile2.r][tile2.c] = t1
 
-    const t1IsObserver = newGrid[tile1.r][tile1.c]?.type === OBSERVER_TYPE
-    const t2IsObserver = newGrid[tile2.r][tile2.c]?.type === OBSERVER_TYPE
+    // Check for special match combinations or manual activations
+    const isT1Special = t1?.special
+    const isT2Special = t2?.special
 
-    if (t1IsObserver || t2IsObserver) {
+    if (isT1Special && isT2Special) {
+      // Massive combo! For now just activate both
+      newGrid = await activateSpecial(newGrid, tile1.r, tile1.c, t2?.type)
+      newGrid = await activateSpecial(newGrid, tile2.r, tile2.c, t1?.type)
       if (mode === 'conviction') setMovesLeft(prev => prev - 1)
       setGrid(newGrid)
-      await new Promise(resolve => setTimeout(resolve, 200))
+      await runGravity(newGrid)
+      return
+    }
 
-      const targetColor = t1IsObserver ? newGrid[tile2.r][tile2.c]?.type : newGrid[tile1.r][tile1.c]?.type
-
-      const clearedGrid = newGrid.map(row => [...row])
-      let clearedCount = 0
-      for (let r = 0; r < GRID_SIZE; r++) {
-        for (let c = 0; c < GRID_SIZE; c++) {
-          if (clearedGrid[r][c] && (clearedGrid[r][c].type === targetColor || clearedGrid[r][c].type === OBSERVER_TYPE)) {
-            clearedGrid[r][c] = null
-            clearedCount++
-          }
-        }
-      }
-      setGrid(clearedGrid)
-      setScore(prev => prev + clearedCount * 10)
-      await new Promise(resolve => setTimeout(resolve, 300))
-
-      await runGravity(clearedGrid)
+    // Unify Observer Logic
+    if (t1?.special === 'observer' || t2?.special === 'observer') {
+      const observerPos = t1?.special === 'observer' ? tile1 : tile2
+      const otherPos = t1?.special === 'observer' ? tile2 : tile1
+      const otherType = newGrid[otherPos.r][otherPos.c]?.type
+      
+      newGrid = await activateSpecial(newGrid, observerPos.r, observerPos.c, otherType)
+      if (mode === 'conviction') setMovesLeft(prev => prev - 1)
+      setGrid(newGrid)
+      await runGravity(newGrid)
       return
     }
 
