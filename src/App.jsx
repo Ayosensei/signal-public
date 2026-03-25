@@ -13,8 +13,11 @@ import Navigation from './components/Navigation'
 
 function App() {
   const [view, setView] = useState('splash')
+  const [showAbout, setShowAbout] = useState(true)
   const [gameMode, setGameMode] = useState('observation')
   const { grid, score, timer, movesLeft, isGameOver, isProcessing, swapTiles, generateBoard } = useGameLogic(gameMode)
+  
+  // Load highScore from localStorage
   const [highScore, setHighScore] = useState(() => {
     const saved = localStorage.getItem('signal_high_score')
     return saved ? parseInt(saved, 10) : 0
@@ -28,39 +31,22 @@ function App() {
     }
   }, [score, highScore])
 
-  if (view === 'about') {
-    return (
-      <div className="about-page">
-        <AboutPage setView={setView} />
-        <Navigation view={view} setView={setView} />
-      </div>
-    )
+  // Navigation handlers
+  const handleSetView = (newView) => {
+    if (newView === 'about') {
+      setShowAbout(true)
+    } else {
+      setView(newView)
+      setShowAbout(false)
+    }
   }
 
-  if (view === 'splash') {
+  const renderContent = () => {
+    if (view === 'splash') {
+      return <SplashScreen setView={setView} highScore={highScore} gameMode={gameMode} setGameMode={setGameMode} />
+    }
+    
     return (
-      <div className="splash-screen">
-        <SplashScreen setView={setView} highScore={highScore} gameMode={gameMode} setGameMode={setGameMode} />
-        <Navigation view={view} setView={setView} />
-      </div>
-    )
-  }
-
-  return (
-    <div className={`app-container ${isGameOver ? 'game-over' : ''}`}>
-      <div className="game-header">
-        <div className="header-left">
-          <h1 className="game-title">SIGNAL</h1>
-          <div className="game-score">SCORE: {score.toLocaleString()}</div>
-          {gameMode === 'signal' && <div className="game-timer">TIME: {timer}s</div>}
-          {gameMode === 'conviction' && <div className="game-moves">MOVES: {movesLeft}</div>}
-        </div>
-        <div className="header-right">
-          <div className="header-icon" onClick={() => generateBoard()}>↺</div>
-          <div className="header-icon">≡</div>
-        </div>
-      </div>
-
       <div className="game-main-layout">
         {/* ... */}
         <div className="board-container">
@@ -74,8 +60,33 @@ function App() {
           )}
         </div>
       </div>
+    )
+  }
 
-      <Navigation view={view} setView={setView} />
+  return (
+    <div className={`app-container ${isGameOver ? 'game-over' : ''}`}>
+      {view === 'game' && (
+        <div className="game-header">
+          <div className="header-left">
+            <h1 className="game-title">SIGNAL</h1>
+            <div className="game-score">SCORE: {score.toLocaleString()}</div>
+            {gameMode === 'signal' && <div className="game-timer">TIME: {timer}s</div>}
+            {gameMode === 'conviction' && <div className="game-moves">MOVES: {movesLeft}</div>}
+          </div>
+          <div className="header-right">
+            <div className="header-icon" onClick={() => generateBoard()}>↺</div>
+            <div className="header-icon">≡</div>
+          </div>
+        </div>
+      )}
+
+      {renderContent()}
+
+      <Navigation view={view} setView={handleSetView} />
+
+      {showAbout && (
+        <AboutPage onClose={() => setShowAbout(false)} />
+      )}
     </div>
   )
 }
