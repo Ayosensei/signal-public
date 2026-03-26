@@ -27,21 +27,21 @@ const Tile = memo(({
     <motion.div
       layout
       key={tile.id}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0, opacity: 0 }}
+      initial={{ scale: 0.9, opacity: 0, y: -20 }}
+      animate={{ scale: 1, opacity: 1, y: 0 }}
+      exit={{ scale: 0.9, opacity: 0 }}
       whileHover={{ scale: isProcessing ? 1 : 1.05 }}
       whileTap={{ scale: isProcessing ? 1 : 0.95 }}
       transition={{ 
         type: 'spring', 
-        stiffness: 500, 
-        damping: 35,
-        mass: 0.5,
+        stiffness: 800, 
+        damping: 40,
+        mass: 0.4,
         layout: { 
           type: 'spring', 
-          stiffness: 600, 
-          damping: 40,
-          mass: 0.5
+          stiffness: 900, 
+          damping: 45,
+          mass: 0.3
         }
       }}
       style={{

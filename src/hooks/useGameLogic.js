@@ -335,7 +335,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
       return
     }
 
-    await new Promise(resolve => setTimeout(resolve, 300))
+    await new Promise(resolve => setTimeout(resolve, 200))
     await runGravity(newGrid, cascadeCount)
   }
 
@@ -367,7 +367,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     }
 
     setGrid(newGrid)
-    await new Promise(resolve => setTimeout(resolve, 400)) 
+    await new Promise(resolve => setTimeout(resolve, 250)) 
 
     await runMatches(newGrid, null, null, cascadeCount + 1)
   }
