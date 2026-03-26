@@ -2,8 +2,8 @@ import React from 'react'
 
 const AboutPage = ({ onClose }) => {
   return (
-    <div className="about-overlay">
-      <div className="about-card">
+    <div className="about-overlay" onClick={onClose}>
+      <div className="about-card" onClick={(e) => e.stopPropagation()}>
         <div className="card-header">
           <div className="logo-text">SIGNAL</div>
           <div className="close-card" onClick={onClose}>✕</div>

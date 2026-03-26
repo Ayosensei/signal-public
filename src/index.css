@@ -920,7 +920,20 @@ body {
   gap: 40px;
   max-width: 1000px;
   margin: 0 auto;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-green) transparent;
   animation: terminalFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sequence-hub::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sequence-hub::-webkit-scrollbar-thumb {
+  background: var(--primary-green);
+  border-radius: 10px;
 }
 
 @keyframes terminalFadeIn {
@@ -943,6 +956,37 @@ body {
   align-items: flex-end;
   flex-wrap: wrap;
   gap: 20px;
+  position: sticky;
+  top: 0;
+  background: var(--bg-color);
+  z-index: 10;
+}
+
+.hub-header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.hub-back-minimal {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--primary-green);
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hub-back-minimal:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--primary-green);
+  transform: translateX(-3px);
 }
 
 .hub-title {

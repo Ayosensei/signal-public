@@ -247,7 +247,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     return { grid: newGrid, clearedCount: finalCoordsToClear.length }
   }
 
-  const runMatches = async (currentGrid, swapPos1 = null, swapPos2 = null) => {
+  const runMatches = async (currentGrid, swapPos1 = null, swapPos2 = null, cascadeCount = 1) => {
     const groups = findMatchGroups(currentGrid)
     if (groups.length === 0) {
       setIsProcessing(false)
@@ -258,6 +258,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
 
     let newGrid = currentGrid.map(row => [...row])
     let clearedCount = 0
+    let pointsFromSpecials = 0
 
     // Check for special tiles in the cleared areas BEFORE clearing them
     for (let r = 0; r < GRID_SIZE; r++) {
@@ -267,12 +268,17 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
           const result = await activateSpecial(newGrid, r, c, newGrid[r][c].type)
           newGrid = result.grid
           clearedCount += result.clearedCount
+          pointsFromSpecials += result.clearedCount * 15 // Bonus for special tile clears
         }
       }
     }
 
+    let pointsFromMatches = 0
     groups.forEach(group => {
-      clearedCount += group.coords.length
+      const basePoints = group.coords.length * 10
+      // Match length multiplier: 3=1x, 4=2x, 5=4x
+      const lengthMult = group.maxLineLength === 4 ? 2 : group.maxLineLength >= 5 ? 4 : 1
+      pointsFromMatches += basePoints * lengthMult
       
       let specialToSpawn = null
       if (group.maxLineLength >= 5 && !group.hasIntersection) {
@@ -280,7 +286,6 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
       } else if (group.hasIntersection) {
         specialToSpawn = 'pulse'
       } else if (group.maxLineLength === 4) {
-        // Candy Crush style: Horizontal match makes Vertical stripe, Vertical match makes Horizontal stripe
         specialToSpawn = group.orientation === 'horizontal' ? 'linear-v' : 'linear-h'
       }
 
@@ -307,15 +312,19 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
 
     setGrid(newGrid)
     
-    // Fix: Use functional update to avoid stale closures during cascades
-    setScore(currentScore => {
-      const addedPoints = clearedCount * 10
-      const totalScore = currentScore + addedPoints
+    // Final score calculation for this step
+    const cascadeMult = 1 + (cascadeCount - 1) * 0.5
+    const totalAdded = Math.round((pointsFromMatches + pointsFromSpecials) * cascadeMult)
 
-      // Objective Check inside functional update to get latest score
+    setScore(currentScore => {
+      const totalScore = currentScore + totalAdded
+
       if (currentSequence && currentSequence.objective.type === 'score') {
-        if (totalScore >= currentSequence.objective.target) {
+        if (totalScore >= currentSequence.objective.target && !isWin) {
           setIsWin(true)
+          // Award end-of-level bonus if winning
+          const bonus = (currentSequence.mode === 'conviction' ? movesLeft * 100 : timer * 50)
+          return totalScore + bonus
         }
       }
       return totalScore
@@ -327,13 +336,12 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     }
 
     await new Promise(resolve => setTimeout(resolve, 300))
-    await runGravity(newGrid)
+    await runGravity(newGrid, cascadeCount)
   }
 
-  const runGravity = async (currentGrid) => {
+  const runGravity = async (currentGrid, cascadeCount = 1) => {
     const newGrid = currentGrid.map(row => [...row])
 
-    // 1. Move existing tiles down
     for (let c = 0; c < GRID_SIZE; c++) {
       let emptyRow = GRID_SIZE - 1
       for (let r = GRID_SIZE - 1; r >= 0; r--) {
@@ -346,7 +354,6 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
       }
     }
 
-    // 2. Refill empty slots immediately in the same state update
     for (let c = 0; c < GRID_SIZE; c++) {
       for (let r = 0; r < GRID_SIZE; r++) {
         if (newGrid[r][c] === null) {
@@ -360,9 +367,9 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     }
 
     setGrid(newGrid)
-    await new Promise(resolve => setTimeout(resolve, 400)) // Let animations settle
+    await new Promise(resolve => setTimeout(resolve, 400)) 
 
-    await runMatches(newGrid)
+    await runMatches(newGrid, null, null, cascadeCount + 1)
   }
 
   const swapTiles = useCallback(async (tile1, tile2) => {

@@ -93,7 +93,10 @@ function App() {
       return (
         <div className="sequence-hub">
           <header className="hub-header">
-            <h2 className="hub-title">NETWORK SEQUENCES</h2>
+            <div className="hub-header-left">
+              <button className="hub-back-minimal" onClick={() => setView('splash')}>←</button>
+              <h2 className="hub-title">NETWORK SEQUENCES</h2>
+            </div>
             <div className="hub-stats">
               <div className="hub-stat">
                 <span className="label">DECRYPTION_PROGRESS:</span>
@@ -154,9 +157,11 @@ function App() {
             })}
           </div>
           
-          <button className="hub-back-btn" onClick={() => setView('splash')}>
-            DISCONNECT_SESSION
-          </button>
+          <div className="hub-footer">
+            <button className="hub-back-btn" onClick={() => setView('splash')}>
+              DISCONNECT_SESSION
+            </button>
+          </div>
         </div>
       )
     }
