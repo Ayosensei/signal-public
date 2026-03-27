@@ -9,7 +9,7 @@ import { useGameLogic } from './hooks/useGameLogic'
 import GameBoard from './components/GameBoard'
 import SplashScreen from './components/SplashScreen'
 import AboutPage from './components/AboutPage'
-import Navigation from './components/Navigation'
+import GameNavigation from './components/Navigation'
 import { SEQUENCES } from './data/levels'
 import SettingsPage from './components/SettingsPage'
 import GameMenu from './components/GameMenu'
@@ -280,7 +280,7 @@ function App() {
 
       {renderContent()}
 
-      {view !== 'game' && <Navigation view={view} setView={handleSetView} />}
+      {view !== 'game' && <GameNavigation view={view} setView={handleSetView} />}
 
       {showAbout && (
         <AboutPage onClose={() => setShowAbout(false)} />

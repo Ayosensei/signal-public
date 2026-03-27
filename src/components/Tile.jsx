@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 const TILE_ASSETS = [
   'Alpha.png',
@@ -16,7 +16,6 @@ const Tile = memo(({
   tile, 
   isSelected, 
   isProcessing, 
-  onClick, 
   onPointerDown
 }) => {
   if (!tile) return null
@@ -44,7 +43,7 @@ const Tile = memo(({
         layout: { 
           type: 'spring', 
           stiffness: 900, 
-          damping: 45,
+          damping: 45, 
           mass: 0.3
         }
       }}
@@ -54,7 +53,6 @@ const Tile = memo(({
         touchAction: 'none'
       }}
       className={`tile tile-${tileType} ${tile?.special ? 'special-' + tile.special : ''} ${isSelected ? 'selected' : ''}`}
-      onClick={() => onClick(r, c)}
       onPointerDown={(e) => onPointerDown(e, r, c)}
       draggable={false}
       data-row={r}

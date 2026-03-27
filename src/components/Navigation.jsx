@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Navigation = ({ view, setView }) => {
+const GameNavigation = ({ view, setView }) => {
   return (
     <div className="footer-nav">
       <div className={`nav-item ${view === 'about' ? 'active' : ''}`} onClick={() => setView('about')}>
@@ -19,4 +19,4 @@ const Navigation = ({ view, setView }) => {
   )
 }
 
-export default Navigation
+export default GameNavigation

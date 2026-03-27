@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Tile from './Tile'
 
@@ -6,7 +6,7 @@ const GameBoard = ({ grid, isProcessing, swapTiles }) => {
   const [selectedTile, setSelectedTile] = useState(null)
   const [swipeOrigin, setSwipeOrigin] = useState(null)
 
-  const handleTileClick = useCallback((r, c) => {
+  const processTap = useCallback((r, c) => {
     if (isProcessing) return
     
     if (selectedTile && selectedTile.r === r && selectedTile.c === c) {
@@ -29,7 +29,6 @@ const GameBoard = ({ grid, isProcessing, swapTiles }) => {
 
   const handlePointerDown = useCallback((e, r, c) => {
     if (isProcessing) return
-    setSelectedTile({ r, c })
     setSwipeOrigin({ x: e.clientX, y: e.clientY, r, c })
   }, [isProcessing])
 
@@ -38,7 +37,7 @@ const GameBoard = ({ grid, isProcessing, swapTiles }) => {
 
     const dx = e.clientX - swipeOrigin.x
     const dy = e.clientY - swipeOrigin.y
-    const threshold = 40 // pixels
+    const threshold = 40 
 
     let targetR = swipeOrigin.r
     let targetC = swipeOrigin.c
@@ -48,10 +47,9 @@ const GameBoard = ({ grid, isProcessing, swapTiles }) => {
     } else if (Math.abs(dy) > threshold) {
       targetR = dy > 0 ? swipeOrigin.r + 1 : swipeOrigin.r - 1
     } else {
-      return // Not far enough
+      return 
     }
 
-    // Boundary check
     if (targetR < 0 || targetR >= 8 || targetC < 0 || targetC >= 8) {
       setSwipeOrigin(null)
       return
@@ -59,14 +57,17 @@ const GameBoard = ({ grid, isProcessing, swapTiles }) => {
 
     swapTiles({ r: swipeOrigin.r, c: swipeOrigin.c }, { r: targetR, c: targetC })
     setSelectedTile(null)
-    setSwipeOrigin(null)
+    setSwipeOrigin(null) 
   }, [swipeOrigin, isProcessing, swapTiles])
 
   const handlePointerUp = useCallback(() => {
-    setSwipeOrigin(null)
-  }, [])
+    if (swipeOrigin) {
+      processTap(swipeOrigin.r, swipeOrigin.c)
+      setSwipeOrigin(null)
+    }
+  }, [swipeOrigin, processTap])
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener('pointermove', handlePointerMove)
     window.addEventListener('pointerup', handlePointerUp)
     return () => {
@@ -76,7 +77,7 @@ const GameBoard = ({ grid, isProcessing, swapTiles }) => {
   }, [handlePointerMove, handlePointerUp])
 
   return (
-    <div className="board" onPointerLeave={handlePointerUp}>
+    <div className="board">
       <AnimatePresence>
         {grid.flatMap((row, r) => 
           row.map((tile, c) => tile && (
@@ -87,7 +88,6 @@ const GameBoard = ({ grid, isProcessing, swapTiles }) => {
               tile={tile}
               isSelected={selectedTile?.r === r && selectedTile?.c === c}
               isProcessing={isProcessing}
-              onClick={handleTileClick}
               onPointerDown={handlePointerDown}
             />
           ))
