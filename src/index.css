@@ -156,6 +156,7 @@ body {
   font-size: 1.1rem;
   font-weight: 900;
   border-radius: 8px;
+  width: min(100%, 300px);
   cursor: pointer;
   box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
   transition: all 0.3s ease;
@@ -244,6 +245,9 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  width: 100%;
+  height: 100%;
+  flex: 1;
 }
 
 /* Game Header Refinement */
@@ -251,7 +255,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 2rem 1.5rem 1rem 1.5rem;
   width: 100%;
 }
 
@@ -301,6 +305,7 @@ body {
   padding: 0 1rem;
   align-items: center;
   flex-direction: column;
+  justify-content: center;
 }
 
 @media (min-width: 1024px) {
@@ -1281,7 +1286,7 @@ body {
   border-radius: 12px;
   color: #000;
   font-weight: 900;
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 5vw, 1.25rem);
   letter-spacing: 0.1em;
   cursor: pointer;
   display: flex;
@@ -1290,6 +1295,8 @@ body {
   align-items: center;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3);
+  width: min(90%, 300px);
+  margin: 0 auto;
 }
 
 .campaign-btn:hover {
@@ -1331,6 +1338,8 @@ body {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  width: min(90%, 300px);
+  margin: 0 auto;
 }
 
 /* --- OVERLAY STATS & ACTIONS (TERMINAL THEME) --- */
