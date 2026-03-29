@@ -106,6 +106,71 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     }
     return groups
   }
+  
+  const hasPossibleMoves = useCallback((currentGrid) => {
+    // Check for any potential match by simulating every possible swap
+    for (let r = 0; r < GRID_SIZE; r++) {
+      for (let c = 0; c < GRID_SIZE; c++) {
+        // Horizontal swap check
+        if (c < GRID_SIZE - 1) {
+          const nextGrid = currentGrid.map(row => [...row])
+          const t1 = nextGrid[r][c]
+          const t2 = nextGrid[r][c + 1]
+          if (t1 && t2) {
+            nextGrid[r][c] = t2
+            nextGrid[r][c + 1] = t1
+            if (findMatchGroups(nextGrid).length > 0) return true
+            // Support observer swaps
+            if (t1.type === OBSERVER_TYPE || t2.type === OBSERVER_TYPE) return true
+          }
+        }
+        // Vertical swap check
+        if (r < GRID_SIZE - 1) {
+          const nextGrid = currentGrid.map(row => [...row])
+          const t1 = nextGrid[r][c]
+          const t2 = nextGrid[r + 1][c]
+          if (t1 && t2) {
+            nextGrid[r][c] = t2
+            nextGrid[r + 1][c] = t1
+            if (findMatchGroups(nextGrid).length > 0) return true
+            // Support observer swaps
+            if (t1.type === OBSERVER_TYPE || t2.type === OBSERVER_TYPE) return true
+          }
+        }
+      }
+    }
+    return false
+  }, [])
+
+  const reshuffleBoard = useCallback(async (currentGrid) => {
+    setIsProcessing(true)
+    let tempGrid = currentGrid.map(row => [...row])
+    let flatTiles = tempGrid.flat().filter(t => t !== null)
+    
+    let attempts = 0
+    let validShuffle = false
+    while (!validShuffle && attempts < 100) {
+      attempts++
+      // Shuffle the tiles
+      for (let i = flatTiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [flatTiles[i], flatTiles[j]] = [flatTiles[j], flatTiles[i]]
+      }
+      
+      // Place back into grid
+      let newGrid = []
+      for (let r = 0; r < GRID_SIZE; r++) {
+        newGrid.push(flatTiles.slice(r * GRID_SIZE, (r + 1) * GRID_SIZE))
+      }
+      
+      if (findMatchGroups(newGrid).length === 0 && hasPossibleMoves(newGrid)) {
+        setGrid(newGrid)
+        validShuffle = true
+        await new Promise(res => setTimeout(res, 600))
+      }
+    }
+    setIsProcessing(false)
+  }, [hasPossibleMoves])
 
   // --- 4. THE CHAIN PROCESSOR (Unified Logic) ---
   const processGridLogic = useCallback(async (initialGrid, interactionTile = null) => {
@@ -141,10 +206,15 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
         if (hasNulls) {
           await applyGravity(gridState)
         } else {
-          if (mode === 'conviction' && movesLeft <= 0 && scoreRef.current < (currentSequence?.objective?.target || 10000)) {
-            setIsGameOver(true)
+          // Check for no moves possible
+          if (!hasPossibleMoves(gridState)) {
+            await reshuffleBoard(gridState)
+          } else {
+            if (mode === 'conviction' && movesLeft <= 0 && scoreRef.current < (currentSequence?.objective?.target || 10000)) {
+              setIsGameOver(true)
+            }
+            setIsProcessing(false)
           }
-          setIsProcessing(false)
         }
         return
       }
@@ -161,8 +231,8 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
         }
 
         let spawnType = null
-      if (group.coords.length === 6) spawnType = 'observer'
-      else if (group.coords.length >= 5 || group.hasIntersection) spawnType = group.hasIntersection ? 'pulse' : 'observer'
+      if (group.coords.length >= 5) spawnType = 'observer'
+      else if (group.hasIntersection) spawnType = 'pulse'
       else if (group.coords.length === 4) spawnType = group.orientation === 'horizontal' ? 'linear-v' : 'linear-h'
 
         group.coords.forEach(({ r, c }) => {
@@ -174,7 +244,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
         if (spawnType) {
           nextGrid[spawnPos.r][spawnPos.c] = {
             id: getNextId(),
-            type: spawnType === 'observer' && group.coords.length >= 6 ? OBSERVER_TYPE : group.type,
+            type: spawnType === 'observer' ? OBSERVER_TYPE : group.type,
             special: spawnType
           }
         }
@@ -194,7 +264,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
       totalPoints = 0 // Reset for next cascade
       
       setGrid(nextGrid)
-      await new Promise(res => setTimeout(res, 300))
+      await new Promise(res => setTimeout(res, 450))
       await applyGravity(nextGrid)
     }
 
@@ -221,7 +291,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
       }
       if (changed) {
         setGrid(nextGrid)
-        await new Promise(res => setTimeout(res, 300))
+        await new Promise(res => setTimeout(res, 450))
         await evaluate(nextGrid)
       }
     }
@@ -257,7 +327,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
         }
       }
       setGrid(finalGrid)
-      await new Promise(res => setTimeout(res, 300))
+      await new Promise(res => setTimeout(res, 500))
       await processGridLogic(finalGrid)
       return
     }
@@ -265,7 +335,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     const nextGrid = grid.map(row => [...row])
     nextGrid[tile1.r][tile1.c] = t2; nextGrid[tile2.r][tile2.c] = t1;
     setGrid(nextGrid)
-    await new Promise(res => setTimeout(res, 300))
+    await new Promise(res => setTimeout(res, 500))
 
     if (findMatchGroups(nextGrid).length > 0) {
       if (mode === 'conviction') setMovesLeft(prev => prev - 1)
@@ -273,7 +343,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     } else {
       const reverted = grid.map(row => [...row])
       setGrid(reverted)
-      await new Promise(res => setTimeout(res, 300))
+      await new Promise(res => setTimeout(res, 500))
       setIsProcessing(false)
     }
   }, [grid, isGameOver, isPaused, isProcessing, mode, movesLeft, processGridLogic])
