@@ -28,31 +28,6 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
 
         <div className="card-content">
           <section className="settings-section">
-            <h2 className="section-header">AUDIO_OUTPUT</h2>
-            <div className="setting-item">
-              <span className="label">MASTER_VOLUME</span>
-              <input 
-                type="range" 
-                min="0" 
-                max="100" 
-                value={audioSettings.volume} 
-                onChange={(e) => updateSetting('volume', parseInt(e.target.value))} 
-                className="volume-slider"
-              />
-              <span className="value">{audioSettings.volume}%</span>
-            </div>
-            <div className="setting-item toggle">
-              <span className="label">SFX_CHANNEL</span>
-              <button 
-                className={`toggle-btn ${audioSettings.sfx ? 'active' : ''}`}
-                onClick={() => updateSetting('sfx', !audioSettings.sfx)}
-              >
-                {audioSettings.sfx ? 'ENABLED' : 'DISABLED'}
-              </button>
-            </div>
-          </section>
-
-          <section className="settings-section">
             <h2 className="section-header">VISUAL_ENGINE</h2>
             <div className="setting-item toggle">
               <span className="label">SCREEN_SHAKE</span>
