@@ -12,6 +12,25 @@ const AuthModal = ({ onClose }) => {
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
   const [wallet, setWallet] = useState('')
+  const [passwordStrength, setPasswordStrength] = useState(0)
+
+  const evaluatePassword = (pass) => {
+    let score = 0
+    if (pass.length > 5) score += 1
+    if (pass.length > 8) score += 1
+    if (/[A-Z]/.test(pass)) score += 1
+    if (/[0-9]/.test(pass)) score += 1
+    if (/[^A-Za-z0-9]/.test(pass)) score += 1
+    return Math.min(score, 4) // Max score of 4
+  }
+
+  const handlePasswordChange = (e) => {
+    const val = e.target.value
+    setPassword(val)
+    if (!isLogin) {
+      setPasswordStrength(evaluatePassword(val))
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -29,6 +48,10 @@ const AuthModal = ({ onClose }) => {
         onClose() // Close on success
       } else {
         // --- REGISTRATION FLOW ---
+        if (passwordStrength < 3) {
+          throw new Error('PASSWORD_SECURITY_LEVEL_TOO_LOW')
+        }
+
         // 1. Create Auth User
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email,
@@ -127,12 +150,28 @@ const AuthModal = ({ onClose }) => {
                 required 
                 minLength={6}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 placeholder="ENTER_PASSWORD"
               />
+              {!isLogin && password.length > 0 && (
+                <div className="password-strength">
+                  <span className="strength-label">SECURITY_LEVEL:</span>
+                  <div className="strength-bars">
+                    {[1, 2, 3, 4].map(level => (
+                      <div 
+                        key={level} 
+                        className={`strength-bar ${passwordStrength >= level ? 'active' : ''} level-${passwordStrength}`}
+                      />
+                    ))}
+                  </div>
+                  <span className={`strength-text level-${passwordStrength}`}>
+                    {passwordStrength < 2 ? 'WEAK' : passwordStrength === 2 ? 'MODERATE' : passwordStrength === 3 ? 'STRONG' : 'MAXIMUM'}
+                  </span>
+                </div>
+              )}
             </div>
 
-            <button type="submit" className="campaign-btn auth-submit" disabled={loading}>
+            <button type="submit" className="campaign-btn auth-submit" disabled={loading || (!isLogin && passwordStrength < 3)}>
               {loading ? 'PROCESSING...' : isLogin ? 'INITIATE_LOGIN' : 'REGISTER_PROFILE'}
             </button>
           </form>

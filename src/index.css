@@ -1780,6 +1780,62 @@ body {
 .auth-toggle .toggle-link:hover {
   color: #fff;
 }
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.strength-label {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.strength-bars {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+}
+
+.strength-bar {
+  height: 4px;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.strength-bar.active.level-1 { background: #ff4444; box-shadow: 0 0 5px #ff4444; }
+.strength-bar.active.level-2 { background: #ffaa00; box-shadow: 0 0 5px #ffaa00; }
+.strength-bar.active.level-3 { background: #00ff88; box-shadow: 0 0 5px #00ff88; }
+.strength-bar.active.level-4 { background: #00ffff; box-shadow: 0 0 5px #00ffff; }
+
+.strength-text {
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 50px;
+  text-align: right;
+}
+
+.strength-text.level-0, .strength-text.level-1 { color: #ff4444; }
+.strength-text.level-2 { color: #ffaa00; }
+.strength-text.level-3 { color: #00ff88; }
+.strength-text.level-4 { color: #00ffff; }
+
+.auth-success {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.4);
+  color: #00ff88;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
 .link-item:hover {
   background: rgba(0, 255, 65, 0.05);
   border-color: var(--primary-green);
