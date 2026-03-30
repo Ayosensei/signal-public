@@ -1,11 +1,16 @@
 import React from 'react'
 
-const SplashScreen = ({ setView, highScore, gameMode, setGameMode, onCampaignClick }) => {
+const SplashScreen = ({ setView, highScore, gameMode, setGameMode, onCampaignClick, onAuthClick, profile }) => {
   return (
     <div className="splash-screen">
       <div className="top-bar">
         <div className="logo-text">SIGNAL</div>
         <div className="top-bar-right">
+          {profile ? (
+            <div className="user-profile glow-text">[{profile.username}]</div>
+          ) : (
+            <button className="auth-trigger-btn" onClick={onAuthClick}>CONNECT_UPLINK</button>
+          )}
           <div className="high-score-display">HIGH-SCORE: {highScore.toLocaleString()}</div>
           <div className="settings-trigger" onClick={() => setView('settings')}>⚙</div>
         </div>

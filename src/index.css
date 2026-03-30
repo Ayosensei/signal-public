@@ -1692,6 +1692,94 @@ body {
   transition: all 0.3s;
 }
 
+/* --- AUTH MODAL SPECIFIC (TERMINAL THEME) --- */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+
+.auth-error {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  color: #ff3333;
+  padding: 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* Modifying the generic setting-item for inputs */
+.auth-input.setting-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.auth-input .label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.auth-input input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.auth-input input:focus {
+  outline: none;
+  border-color: #00ff88;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+  background: rgba(0, 255, 136, 0.05);
+}
+
+.auth-input input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.auth-submit {
+  margin-top: 1rem;
+}
+
+.auth-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.auth-toggle .toggle-text {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.auth-toggle .toggle-link {
+  background: none;
+  border: none;
+  color: #00ff88;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.auth-toggle .toggle-link:hover {
+  color: #fff;
+}
 .link-item:hover {
   background: rgba(0, 255, 65, 0.05);
   border-color: var(--primary-green);
@@ -1742,4 +1830,32 @@ body {
 .top-bar-right {
   display: flex;
   align-items: center;
+  gap: 1.5rem;
+}
+
+.auth-trigger-btn {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: #00ff88;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.auth-trigger-btn:hover {
+  background: var(--primary-green);
+  color: #000;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+}
+
+.user-profile {
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
 }

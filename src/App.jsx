@@ -13,13 +13,16 @@ import GameNavigation from './components/Navigation'
 import { SEQUENCES } from './data/levels'
 import SettingsPage from './components/SettingsPage'
 import GameMenu from './components/GameMenu'
+import AuthModal from './components/AuthModal'
 import { AnimatePresence } from 'framer-motion'
+import { useAuth } from './context/AuthContext'
 
 function App() {
   // 1. STATE HOOKS
   const [view, setView] = useState('splash')
   const [showAbout, setShowAbout] = useState(true)
   const [showGameMenu, setShowGameMenu] = useState(false)
+  const [showAuth, setShowAuth] = useState(false)
   const [gameMode, setGameMode] = useState('observation')
   const [selectedSequence, setSelectedSequence] = useState(null)
   const [unlockedSequence, setUnlockedSequence] = useState(() => {
@@ -36,6 +39,8 @@ function App() {
   })
 
   // 2. CUSTOM HOOKS (Stable Order)
+  const { user, profile } = useAuth()
+  
   const { 
     grid, 
     score, 
@@ -137,6 +142,8 @@ function App() {
           gameMode={gameMode} 
           setGameMode={setGameMode}
           onCampaignClick={() => setView('sequence-hub')}
+          onAuthClick={() => setShowAuth(true)}
+          profile={profile}
         />
       )
     }
@@ -301,6 +308,9 @@ function App() {
             onAction={handleMenuAction}
             onClose={() => setShowGameMenu(false)}
           />
+        )}
+        {showAuth && (
+          <AuthModal onClose={() => setShowAuth(false)} />
         )}
       </AnimatePresence>
     </div>
