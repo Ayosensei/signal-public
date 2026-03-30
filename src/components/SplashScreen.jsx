@@ -40,6 +40,10 @@ const SplashScreen = ({ setView, highScore, gameMode, setGameMode, onCampaignCli
               QUICK START: {gameMode.toUpperCase()}
             </button>
           </div>
+
+          <button className="leaderboard-trigger-btn" onClick={() => setView('leaderboard')}>
+            [GLOBAL_RANKINGS]
+          </button>
         </div>
 
         <div className="diagnostics-card">

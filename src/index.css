@@ -1915,3 +1915,116 @@ body {
   font-weight: 700;
   letter-spacing: 2px;
 }
+
+/* --- LEADERBOARD SPECIFIC --- */
+
+.leaderboard-trigger-btn {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(0, 255, 136, 0.05);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  letter-spacing: 2px;
+}
+
+.leaderboard-trigger-btn:hover {
+  background: rgba(0, 255, 136, 0.2);
+  border-color: rgba(0, 255, 136, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+}
+
+.leaderboard-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.table-wrapper {
+  overflow-y: auto;
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.8rem;
+}
+
+.leaderboard-table th {
+  text-align: left;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+  position: sticky;
+  top: 0;
+  background: rgba(10, 10, 10, 0.95);
+  z-index: 10;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+}
+
+.leaderboard-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.leaderboard-table tr:hover td {
+  background: rgba(0, 255, 136, 0.05);
+}
+
+.leaderboard-table .rank-cell {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.leaderboard-table .agent-handle {
+  color: #fff;
+  font-weight: 700;
+}
+
+.leaderboard-table .agent-wallet {
+  color: rgba(0, 255, 136, 0.6);
+}
+
+.leaderboard-table .agent-score {
+  color: #00ff88;
+  font-weight: 700;
+  text-align: right;
+}
+
+.leaderboard-table th:last-child {
+  text-align: right;
+}
+
+.leaderboard-table .rank-top td {
+  color: #00ff88;
+}
+
+.leaderboard-table .rank-top .rank-cell {
+  color: #00ff88;
+}
+
+.leaderboard-table .rank-one td {
+  background: rgba(0, 255, 136, 0.1);
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.leaderboard-loading, .leaderboard-empty {
+  text-align: center;
+  margin-top: 3rem;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  color: #00ff88;
+  animation: pulse 2s infinite;
+}

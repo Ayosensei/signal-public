@@ -14,8 +14,10 @@ import { SEQUENCES } from './data/levels'
 import SettingsPage from './components/SettingsPage'
 import GameMenu from './components/GameMenu'
 import AuthModal from './components/AuthModal'
+import LeaderboardPage from './components/LeaderboardPage'
 import { AnimatePresence } from 'framer-motion'
 import { useAuth } from './context/AuthContext'
+import { supabase } from './lib/supabaseClient'
 
 function App() {
   // 1. STATE HOOKS
@@ -23,6 +25,7 @@ function App() {
   const [showAbout, setShowAbout] = useState(true)
   const [showGameMenu, setShowGameMenu] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
+  const [hasSubmittedScore, setHasSubmittedScore] = useState(false)
   const [gameMode, setGameMode] = useState('observation')
   const [selectedSequence, setSelectedSequence] = useState(null)
   const [unlockedSequence, setUnlockedSequence] = useState(() => {
@@ -83,6 +86,30 @@ function App() {
     }
   }, [view, showGameMenu, setIsPaused])
 
+  useEffect(() => {
+    if (isGameOver && !currentSequence && gameMode === 'signal' && user && !hasSubmittedScore) {
+      setHasSubmittedScore(true)
+      const submitScore = async () => {
+        try {
+          const { error } = await supabase.from('leaderboard').insert({
+            player_id: user.id,
+            score: score,
+            game_mode: 'signal'
+          })
+          if (error) throw error
+          console.log('Score pushed to uplink')
+        } catch (err) {
+          console.error('Failed to transmit score:', err)
+        }
+      }
+      submitScore()
+    }
+    
+    if (!isGameOver) {
+      setHasSubmittedScore(false)
+    }
+  }, [isGameOver, gameMode, currentSequence, user, score, hasSubmittedScore])
+
   // 4. CALLBACK HANDLERS
   const handleSetView = (newView) => {
     if (newView === 'about') {
@@ -92,6 +119,9 @@ function App() {
       setShowAbout(false)
     } else if (newView === 'settings') {
       setView('settings')
+      setShowAbout(false)
+    } else if (newView === 'leaderboard') {
+      setView('leaderboard')
       setShowAbout(false)
     } else {
       if (newView === 'splash') setSelectedSequence(null)
@@ -146,6 +176,10 @@ function App() {
           profile={profile}
         />
       )
+    }
+
+    if (view === 'leaderboard') {
+      return <LeaderboardPage setView={setView} />
     }
 
     if (view === 'sequence-hub') {
