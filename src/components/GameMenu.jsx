@@ -3,10 +3,10 @@ import { motion } from 'framer-motion'
 
 const GameMenu = ({ onAction, onClose }) => {
   const menuItems = [
-    { id: 'resume', label: 'RESUME_SESSION', icon: '▶' },
-    { id: 'hub', label: 'NETWORK_HUB', icon: '≡' },
-    { id: 'settings', label: 'SYSTEM_SETTINGS', icon: '⚙' },
-    { id: 'home', label: 'MAIN_TERMINAL', icon: '⌂' }
+    { id: 'resume', label: 'RESUME GAME', icon: '▶' },
+    { id: 'hub', label: 'CAMPAIGN MENU', icon: '≡' },
+    { id: 'settings', label: 'SETTINGS', icon: '⚙' },
+    { id: 'home', label: 'MAIN MENU', icon: '⌂' }
   ]
 
   return (
@@ -25,7 +25,7 @@ const GameMenu = ({ onAction, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="menu-header">
-          <div className="logo-text">GAME_MENU</div>
+          <div className="logo-text">PAUSED</div>
           <div className="close-menu" onClick={onClose}>✕</div>
         </div>
 
@@ -45,7 +45,7 @@ const GameMenu = ({ onAction, onClose }) => {
         <div className="menu-footer">
           <div className="status-indicator">
             <span className="dot"></span>
-            CONNECTION_STABLE
+            GAME PAUSED
           </div>
         </div>
       </motion.div>

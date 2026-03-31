@@ -9,7 +9,7 @@ const SplashScreen = ({ setView, highScore, gameMode, setGameMode, onCampaignCli
           {profile ? (
             <div className="user-profile glow-text">[{profile.username}]</div>
           ) : (
-            <button className="auth-trigger-btn" onClick={onAuthClick}>CONNECT_UPLINK</button>
+            <button className="auth-trigger-btn" onClick={onAuthClick}>LOGIN / CONNECT</button>
           )}
           <div className="high-score-display">HIGH-SCORE: {highScore.toLocaleString()}</div>
           <div className="settings-trigger" onClick={() => setView('settings')}>⚙</div>
@@ -25,7 +25,7 @@ const SplashScreen = ({ setView, highScore, gameMode, setGameMode, onCampaignCli
         <div className="action-buttons">
           <button className="campaign-btn" onClick={onCampaignClick}>
             CAMPAIGN MODE
-            <span className="btn-subtitle">DECODE SEQUENCES</span>
+            <span className="btn-subtitle">MISSIONS</span>
           </button>
 
           <div className="divider"><span>OR</span></div>
@@ -42,15 +42,15 @@ const SplashScreen = ({ setView, highScore, gameMode, setGameMode, onCampaignCli
           </div>
 
           <button className="leaderboard-trigger-btn" onClick={() => setView('leaderboard')}>
-            [GLOBAL_RANKINGS]
+            [ LEADERBOARD ]
           </button>
         </div>
 
         <div className="diagnostics-card">
-          <p className="diag-header">SYSTEM DIAGNOSTICS</p>
+          <p className="diag-header">SYSTEM STATUS</p>
           <div className="diag-grid">
-            <span>ENCRYPTION: ACTIVE</span>
-            <span>PULSE_LOAD: 88.4%</span>
+            <span>SECURE CONNECTION</span>
+            <span>NETWORK_LOAD: 88.4%</span>
             <span>CORES: 6 / ONLINE</span>
             <span>LATENCY: 12MS</span>
           </div>

@@ -98,7 +98,7 @@ const AuthModal = ({ onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="card-header">
-          <div className="logo-text">{isLogin ? 'SECURE_LOGIN' : 'AGENT_REGISTRATION'}</div>
+          <div className="logo-text">{isLogin ? 'SECURE LOGIN' : 'CREATE ACCOUNT'}</div>
           <div className="close-card" onClick={onClose}>✕</div>
         </div>
 
@@ -109,14 +109,14 @@ const AuthModal = ({ onClose }) => {
             {!isLogin && (
               <>
                 <div className="setting-item auth-input">
-                  <span className="label">HACKER_HANDLE</span>
+                  <span className="label">PLAYER HANDLE</span>
                   <input 
                     type="text" 
                     required 
                     maxLength={16}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="ENTER_HANDLE"
+                    placeholder="ENTER USERNAME"
                   />
                 </div>
                 <div className="setting-item auth-input">
@@ -133,18 +133,18 @@ const AuthModal = ({ onClose }) => {
             )}
 
             <div className="setting-item auth-input">
-              <span className="label">CONTACT_UPLINK (EMAIL)</span>
+              <span className="label">EMAIL ADDRESS</span>
               <input 
                 type="email" 
                 required 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ENTER_EMAIL"
+                placeholder="ENTER EMAIL"
               />
             </div>
 
             <div className="setting-item auth-input">
-              <span className="label">ACCESS_KEY (PASSWORD)</span>
+              <span className="label">PASSWORD</span>
               <input 
                 type="password" 
                 required 
@@ -172,13 +172,13 @@ const AuthModal = ({ onClose }) => {
             </div>
 
             <button type="submit" className="campaign-btn auth-submit" disabled={loading || (!isLogin && passwordStrength < 3)}>
-              {loading ? 'PROCESSING...' : isLogin ? 'INITIATE_LOGIN' : 'REGISTER_PROFILE'}
+              {loading ? 'PROCESSING...' : isLogin ? 'LOGIN' : 'CREATE ACCOUNT'}
             </button>
           </form>
 
           <div className="auth-toggle">
             <span className="toggle-text">
-              {isLogin ? 'NO_PROFILE_FOUND?' : 'ALREADY_HAVE_ACCESS?'}
+              {isLogin ? 'NEED AN ACCOUNT?' : 'ALREADY REGISTERED?'}
             </span>
             <button 
               type="button" 

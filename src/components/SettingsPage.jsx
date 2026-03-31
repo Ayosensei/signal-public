@@ -49,40 +49,40 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
         onClick={(e) => e.stopPropagation()}
       >
         <div className="card-header">
-          <div className="logo-text">SYSTEM_SETTINGS</div>
+          <div className="logo-text">SETTINGS</div>
           <div className="close-card" onClick={onClose}>✕</div>
         </div>
 
         <div className="card-content">
           {user && profile && (
             <section className="settings-section">
-              <h2 className="section-header">UPLINK_CONNECTION</h2>
+              <h2 className="section-header">ACCOUNT CONNECTION</h2>
               <div className="setting-item">
-                <span className="label">AGENT_HANDLE</span>
+                <span className="label">PLAYER HANDLE</span>
                 <span className="value glow-text">[{profile.username}]</span>
               </div>
               
               {!isChangingPassword ? (
                 <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem'}}>
                   <button className="reset-progress-btn" style={{margin: 0, borderColor: 'rgba(0,255,136,0.3)', color: '#00ff88', background: 'rgba(0,255,136,0.05)'}} onClick={() => setIsChangingPassword(true)}>
-                    CHANGE_ACCESS_KEY
+                    CHANGE PASSWORD
                   </button>
                   <button className="reset-progress-btn" style={{margin: 0}} onClick={handleLogout}>
-                    SEVER_CONNECTION (LOGOUT)
+                    LOGOUT
                   </button>
                 </div>
               ) : (
                 <form className="auth-form" onSubmit={handlePasswordUpdate} style={{padding: '0.5rem 0', marginTop: '0.5rem'}}>
                   {authMsg && <div className={authMsg === 'KEY_UPDATED_SUCCESSFULLY' ? 'auth-success' : 'auth-error'}>{authMsg}</div>}
                   <div className="setting-item auth-input">
-                    <span className="label">NEW_ACCESS_KEY</span>
+                    <span className="label">NEW PASSWORD</span>
                     <input 
                       type="password" 
                       required 
                       minLength={6}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="ENTER_NEW_PASSWORD"
+                      placeholder="ENTER NEW PASSWORD"
                     />
                   </div>
                   <div style={{display: 'flex', gap: '1rem'}}>
@@ -95,7 +95,7 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
           )}
 
           <section className="settings-section">
-            <h2 className="section-header">VISUAL_ENGINE</h2>
+            <h2 className="section-header">VISUALS</h2>
             <div className="setting-item toggle">
               <span className="label">SCREEN_SHAKE</span>
               <button 
@@ -122,9 +122,9 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
           </section>
 
           <section className="settings-section danger-zone">
-            <h2 className="section-header">DATA_PURGE</h2>
+            <h2 className="section-header">RESET PROGRESS</h2>
             <button className="reset-progress-btn" onClick={onResetProgress}>
-              RESET_DECRYPTION_PROGRESS
+              RESET CAMPAIGN SEQUENCE
             </button>
           </section>
         </div>

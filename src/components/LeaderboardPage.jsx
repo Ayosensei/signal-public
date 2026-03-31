@@ -44,22 +44,22 @@ const LeaderboardPage = ({ setView }) => {
       <header className="hub-header">
         <div className="hub-header-left">
           <button className="hub-back-minimal" onClick={() => setView('splash')}>←</button>
-          <h2 className="hub-title">GLOBAL RANKINGS (SIGNAL_MODE)</h2>
+          <h2 className="hub-title">GLOBAL LEADERBOARD (SIGNAL)</h2>
         </div>
       </header>
 
       <div className="leaderboard-container">
         {loading ? (
-          <div className="leaderboard-loading">FETCHING_UPLINK_DATA...</div>
+          <div className="leaderboard-loading">LOADING SCORES...</div>
         ) : scores.length === 0 ? (
-          <div className="leaderboard-empty">NO_DATA_FOUND. BE_THE_FIRST.</div>
+          <div className="leaderboard-empty">NO SCORES FOUND. BE THE FIRST.</div>
         ) : (
           <div className="table-wrapper">
             <table className="leaderboard-table">
               <thead>
                 <tr>
                   <th>RANK</th>
-                  <th>AGENT_HANDLE</th>
+                  <th>PLAYER HANDLE</th>
                   <th>WALLET</th>
                   <th>FINAL_SCORE</th>
                 </tr>
@@ -68,7 +68,7 @@ const LeaderboardPage = ({ setView }) => {
                 {scores.map((entry, idx) => (
                   <tr key={idx} className={idx === 0 ? 'rank-one' : idx < 3 ? 'rank-top' : ''}>
                     <td className="rank-cell">{idx === 0 ? '👑' : idx + 1}</td>
-                    <td className="agent-handle">{entry.profiles?.username || 'UNKNOWN_AGENT'}</td>
+                    <td className="agent-handle">{entry.profiles?.username || 'UNKNOWN PLAYER'}</td>
                     <td className="agent-wallet">{maskWallet(entry.profiles?.wallet_address)}</td>
                     <td className="agent-score">{entry.score.toLocaleString()}</td>
                   </tr>
@@ -81,7 +81,7 @@ const LeaderboardPage = ({ setView }) => {
       
       <div className="hub-footer">
         <button className="hub-back-btn" onClick={() => setView('splash')}>
-          RETURN_TO_MAIN
+          RETURN TO MENU
         </button>
       </div>
     </div>

@@ -192,7 +192,7 @@ function App() {
             </div>
             <div className="hub-stats">
               <div className="hub-stat">
-                <span className="label">DECRYPTION_PROGRESS:</span>
+                <span className="label">CAMPAIGN PROGRESS:</span>
                 <span className="value">{Math.round((unlockedSequence / SEQUENCES.length) * 100)}%</span>
               </div>
               <div className="hub-stat">
@@ -252,7 +252,7 @@ function App() {
           
           <div className="hub-footer">
             <button className="hub-back-btn" onClick={() => setView('splash')}>
-              DISCONNECT_SESSION
+              RETURN TO MENU
             </button>
           </div>
         </div>
@@ -266,7 +266,7 @@ function App() {
           
           {(isGameOver || isWin) && (
             <div className={`game-over-overlay ${isWin ? 'win' : 'loss'}`}>
-              <h2 className="status-text">{isWin ? 'SEQUENCE DECRYPTED' : 'SIGNAL LOST'}</h2>
+              <h2 className="status-text">{isWin ? 'MISSION COMPLETE' : 'GAME OVER'}</h2>
               <div className="results-box">
                 <div className="stat">
                   <span>FINAL SCORE</span>
@@ -282,11 +282,11 @@ function App() {
               
               <div className="overlay-actions">
                 {isWin && currentSequence && currentSequence.id < SEQUENCES.length ? (
-                  <button onClick={() => startSequence(SEQUENCES[currentSequence.id])}>NEXT SEQUENCE</button>
+                  <button onClick={() => startSequence(SEQUENCES[currentSequence.id])}>NEXT MISSION</button>
                 ) : (
-                  <button onClick={() => generateBoard()}>REBOOT SYSTEM</button>
+                  <button onClick={() => generateBoard()}>PLAY AGAIN</button>
                 )}
-                <button onClick={() => setView('sequence-hub')}>SEQUENCE HUB</button>
+                <button onClick={() => setView('sequence-hub')}>CAMPAIGN MENU</button>
               </div>
             </div>
           )}
