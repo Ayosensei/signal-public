@@ -34,14 +34,14 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="settings-overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
-      <motion.div 
+      <motion.div
         className="settings-card"
         initial={{ y: 20, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -61,33 +61,33 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
                 <span className="label">PLAYER HANDLE</span>
                 <span className="value glow-text">[{profile.username}]</span>
               </div>
-              
+
               {!isChangingPassword ? (
-                <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem'}}>
-                  <button className="reset-progress-btn" style={{margin: 0, borderColor: 'rgba(0,255,136,0.3)', color: '#00ff88', background: 'rgba(0,255,136,0.05)'}} onClick={() => setIsChangingPassword(true)}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  <button className="reset-progress-btn" style={{ margin: 0, borderColor: 'rgba(0,255,136,0.3)', color: '#00ff88', background: 'rgba(0,255,136,0.05)' }} onClick={() => setIsChangingPassword(true)}>
                     CHANGE PASSWORD
                   </button>
-                  <button className="reset-progress-btn" style={{margin: 0}} onClick={handleLogout}>
+                  <button className="reset-progress-btn" style={{ margin: 0 }} onClick={handleLogout}>
                     LOGOUT
                   </button>
                 </div>
               ) : (
-                <form className="auth-form" onSubmit={handlePasswordUpdate} style={{padding: '0.5rem 0', marginTop: '0.5rem'}}>
+                <form className="auth-form" onSubmit={handlePasswordUpdate} style={{ padding: '0.5rem 0', marginTop: '0.5rem' }}>
                   {authMsg && <div className={authMsg === 'KEY_UPDATED_SUCCESSFULLY' ? 'auth-success' : 'auth-error'}>{authMsg}</div>}
                   <div className="setting-item auth-input">
                     <span className="label">NEW PASSWORD</span>
-                    <input 
-                      type="password" 
-                      required 
+                    <input
+                      type="password"
+                      required
                       minLength={6}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="ENTER NEW PASSWORD"
                     />
                   </div>
-                  <div style={{display: 'flex', gap: '1rem'}}>
-                    <button type="submit" className="campaign-btn" style={{flex: 1, padding: '0.8rem'}}>UPDATE</button>
-                    <button type="button" className="campaign-btn" style={{flex: 1, padding: '0.8rem', background: 'transparent', border: '1px solid #ff4444', color: '#ff4444'}} onClick={() => { setIsChangingPassword(false); setAuthMsg(''); setNewPassword(''); }}>CANCEL</button>
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button type="submit" className="campaign-btn" style={{ flex: 1, padding: '0.8rem' }}>UPDATE</button>
+                    <button type="button" className="campaign-btn" style={{ flex: 1, padding: '0.8rem', background: 'transparent', border: '1px solid #ff4444', color: '#ff4444' }} onClick={() => { setIsChangingPassword(false); setAuthMsg(''); setNewPassword(''); }}>CANCEL</button>
                   </div>
                 </form>
               )}
@@ -98,7 +98,7 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
             <h2 className="section-header">VISUALS</h2>
             <div className="setting-item toggle">
               <span className="label">SCREEN_SHAKE</span>
-              <button 
+              <button
                 className={`toggle-btn ${audioSettings.shake ? 'active' : ''}`}
                 onClick={() => updateSetting('shake', !audioSettings.shake)}
               >
@@ -114,10 +114,10 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
           <section className="settings-section links">
             <h2 className="section-header">EXTERNAL_UPLINKS</h2>
             <div className="links-grid">
-              <a href="#" className="link-item">X_FEED</a>
-              <a href="#" className="link-item">TELEGRAM</a>
+              <a href="https://x.com/cloverboys777?s=21" className="link-item">X_FEED</a>
+              <a href="https://t.me/+fYbfV-lm0co4MDFh" className="link-item">TELEGRAM</a>
               <a href="#" className="link-item">DEX_SCREENER</a>
-              <a href="#" className="link-item">MANIFESTO</a>
+              <a href="https://cloverboys.vercel.app/#manifesto" className="link-item">MANIFESTO</a>
             </div>
           </section>
 
