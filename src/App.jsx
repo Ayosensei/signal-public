@@ -18,6 +18,14 @@ import LeaderboardPage from './components/LeaderboardPage'
 import { AnimatePresence } from 'framer-motion'
 import { useAuth } from './context/AuthContext'
 import { supabase } from './lib/supabaseClient'
+const getStartOfWeek = () => {
+  const d = new Date()
+  d.setUTCHours(0, 0, 0, 0)
+  const day = d.getUTCDay()
+  const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1)
+  d.setUTCDate(diff)
+  return d.toISOString()
+}
 
 function App() {
   // 1. STATE HOOKS
@@ -91,13 +99,39 @@ function App() {
       setHasSubmittedScore(true)
       const submitScore = async () => {
         try {
-          const { error } = await supabase.from('leaderboard').insert({
-            player_id: user.id,
-            score: score,
-            game_mode: 'signal'
-          })
-          if (error) throw error
-          console.log('Score pushed to uplink')
+          const startOfWeek = getStartOfWeek()
+          
+          const { data: existing, error: fetchError } = await supabase
+            .from('leaderboard')
+            .select('id, score')
+            .eq('player_id', user.id)
+            .eq('game_mode', 'signal')
+            .gte('created_at', startOfWeek)
+            .order('score', { ascending: false })
+
+          if (fetchError) throw fetchError
+
+          if (existing && existing.length > 0) {
+            const bestScore = existing[0].score
+            if (score > bestScore) {
+              const { error } = await supabase
+                .from('leaderboard')
+                .update({ score: score })
+                .eq('id', existing[0].id)
+              if (error) throw error
+              console.log('Score updated in uplink')
+            } else {
+              console.log('Score did not beat weekly high, ignored')
+            }
+          } else {
+            const { error } = await supabase.from('leaderboard').insert({
+              player_id: user.id,
+              score: score,
+              game_mode: 'signal'
+            })
+            if (error) throw error
+            console.log('Score pushed to uplink')
+          }
         } catch (err) {
           console.error('Failed to transmit score:', err)
         }

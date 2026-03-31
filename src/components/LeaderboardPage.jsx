@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
+const getStartOfWeek = () => {
+  const d = new Date()
+  d.setUTCHours(0, 0, 0, 0)
+  const day = d.getUTCDay()
+  const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1)
+  d.setUTCDate(diff)
+  return d.toISOString()
+}
+
 const LeaderboardPage = ({ setView }) => {
   const [scores, setScores] = useState([])
   const [loading, setLoading] = useState(true)
@@ -11,6 +20,7 @@ const LeaderboardPage = ({ setView }) => {
         const { data, error } = await supabase
           .from('leaderboard')
           .select(`
+            player_id,
             score,
             profiles (
               username,
@@ -18,11 +28,23 @@ const LeaderboardPage = ({ setView }) => {
             )
           `)
           .eq('game_mode', 'signal')
+          .gte('created_at', getStartOfWeek())
           .order('score', { ascending: false })
-          .limit(50)
+          .limit(200)
 
         if (error) throw error
-        setScores(data)
+        
+        const uniquePlayers = new Set()
+        const topScores = []
+        for (const entry of data) {
+          if (!uniquePlayers.has(entry.player_id)) {
+            uniquePlayers.add(entry.player_id)
+            topScores.push(entry)
+            if (topScores.length === 50) break
+          }
+        }
+        
+        setScores(topScores)
       } catch (err) {
         console.error("Failed to load leaderboard:", err)
       } finally {
