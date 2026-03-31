@@ -18,6 +18,7 @@ import LeaderboardPage from './components/LeaderboardPage'
 import { AnimatePresence } from 'framer-motion'
 import { useAuth } from './context/AuthContext'
 import { supabase } from './lib/supabaseClient'
+import { obfuscateSave, readObfuscatedSave, generateSignature } from './lib/security'
 const getStartOfWeek = () => {
   const d = new Date()
   d.setUTCHours(0, 0, 0, 0)
@@ -37,12 +38,10 @@ function App() {
   const [gameMode, setGameMode] = useState('observation')
   const [selectedSequence, setSelectedSequence] = useState(null)
   const [unlockedSequence, setUnlockedSequence] = useState(() => {
-    const saved = localStorage.getItem('signal_unlocked_sequence')
-    return saved ? parseInt(saved, 10) : 1
+    return readObfuscatedSave('signal_unlocked_sequence', 1)
   })
   const [highScore, setHighScore] = useState(() => {
-    const saved = localStorage.getItem('signal_high_score')
-    return saved ? parseInt(saved, 10) : 0
+    return readObfuscatedSave('signal_high_score', 0)
   })
   const [audioSettings, setAudioSettings] = useState(() => {
     const saved = localStorage.getItem('signal_audio_settings')
@@ -64,7 +63,8 @@ function App() {
     setIsPaused,
     swapTiles, 
     generateBoard,
-    currentSequence 
+    currentSequence,
+    gameStartTime
   } = useGameLogic(gameMode, selectedSequence)
 
   // 3. EFFECT HOOKS
@@ -75,13 +75,13 @@ function App() {
   useEffect(() => {
     if (score > highScore) {
       setHighScore(score)
-      localStorage.setItem('signal_high_score', score.toString())
+      obfuscateSave('signal_high_score', score)
     }
     if (isWin && currentSequence) {
       const nextLevel = currentSequence.id + 1
       if (nextLevel > unlockedSequence) {
         setUnlockedSequence(nextLevel)
-        localStorage.setItem('signal_unlocked_sequence', nextLevel.toString())
+        obfuscateSave('signal_unlocked_sequence', nextLevel)
       }
     }
   }, [score, highScore, isWin, currentSequence, unlockedSequence])
@@ -99,7 +99,16 @@ function App() {
       setHasSubmittedScore(true)
       const submitScore = async () => {
         try {
+          if (gameStartTime) {
+            const elapsedTime = Date.now() - gameStartTime;
+            if (elapsedTime < 2000) {
+              console.warn("Score rejected: Time tempering detected. (Duration: " + elapsedTime + "ms)");
+              return;
+            }
+          }
+
           const startOfWeek = getStartOfWeek()
+          const payloadSignature = generateSignature(score, user.id, Date.now())
           
           const { data: existing, error: fetchError } = await supabase
             .from('leaderboard')
@@ -116,7 +125,7 @@ function App() {
             if (score > bestScore) {
               const { error } = await supabase
                 .from('leaderboard')
-                .update({ score: score })
+                .update({ score: score, signature: payloadSignature })
                 .eq('id', existing[0].id)
               if (error) throw error
               console.log('Score updated in uplink')
@@ -127,7 +136,8 @@ function App() {
             const { error } = await supabase.from('leaderboard').insert({
               player_id: user.id,
               score: score,
-              game_mode: 'signal'
+              game_mode: 'signal',
+              signature: payloadSignature
             })
             if (error) throw error
             console.log('Score pushed to uplink')
@@ -142,7 +152,7 @@ function App() {
     if (!isGameOver) {
       setHasSubmittedScore(false)
     }
-  }, [isGameOver, gameMode, currentSequence, user, score, hasSubmittedScore])
+  }, [isGameOver, gameMode, currentSequence, user, score, hasSubmittedScore, gameStartTime])
 
   // 4. CALLBACK HANDLERS
   const handleSetView = (newView) => {

@@ -15,6 +15,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
   const [isWin, setIsWin] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [currentSequence, setCurrentSequence] = useState(levelConfig)
+  const [gameStartTime, setGameStartTime] = useState(null)
   
   // --- 2. REF HOOKS ---
   const tileIdRef = useRef(0)
@@ -411,6 +412,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     setGrid(newGrid); setScore(0); scoreRef.current = 0;
     setTimer(currentSequence?.time || 60); setMovesLeft(currentSequence?.moves || 25);
     setIsGameOver(false); setIsWin(false); setIsProcessing(false);
+    setGameStartTime(Date.now());
   }, [currentSequence])
 
   useEffect(() => {
@@ -432,6 +434,6 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
 
   return {
     grid, score, timer, movesLeft, isGameOver, isWin, isProcessing, isPaused,
-    setIsPaused, swapTiles, generateBoard, currentSequence
+    setIsPaused, swapTiles, generateBoard, currentSequence, gameStartTime
   }
 }
