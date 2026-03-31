@@ -123,6 +123,10 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
             if (findMatchGroups(nextGrid).length > 0) return true
             // Support observer swaps
             if (t1.type === OBSERVER_TYPE || t2.type === OBSERVER_TYPE) return true
+            // Support linear combos
+            const isT1Linear = t1.special === 'linear-h' || t1.special === 'linear-v'
+            const isT2Linear = t2.special === 'linear-h' || t2.special === 'linear-v'
+            if (isT1Linear && isT2Linear) return true
           }
         }
         // Vertical swap check
@@ -136,6 +140,10 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
             if (findMatchGroups(nextGrid).length > 0) return true
             // Support observer swaps
             if (t1.type === OBSERVER_TYPE || t2.type === OBSERVER_TYPE) return true
+            // Support linear combos
+            const isT1Linear = t1.special === 'linear-h' || t1.special === 'linear-v'
+            const isT2Linear = t2.special === 'linear-h' || t2.special === 'linear-v'
+            if (isT1Linear && isT2Linear) return true
           }
         }
       }

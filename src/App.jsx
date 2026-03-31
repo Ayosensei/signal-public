@@ -101,7 +101,7 @@ function App() {
         try {
           if (gameStartTime) {
             const elapsedTime = Date.now() - gameStartTime;
-            if (elapsedTime < 2000) {
+            if (elapsedTime < 55000) {
               console.warn("Score rejected: Time tempering detected. (Duration: " + elapsedTime + "ms)");
               return;
             }

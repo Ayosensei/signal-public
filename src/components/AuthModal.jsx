@@ -52,6 +52,13 @@ const AuthModal = ({ onClose }) => {
           throw new Error('PASSWORD_SECURITY_LEVEL_TOO_LOW')
         }
 
+        const { data: existingUser } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('username', username)
+          .maybeSingle()
+        if (existingUser) throw new Error('USERNAME_ALREADY_IN_USE')
+
         // 1. Create Auth User
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email,
