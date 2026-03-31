@@ -223,7 +223,8 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
       const toClear = new Set()
       
       groups.forEach(group => {
-        totalPoints += group.coords.length * 100
+        let groupPoints = group.coords.length * 100
+
         let spawnPos = group.coords[0]
         if (firstTrigger && interactionTile) {
           const match = group.coords.find(p => p.r === interactionTile.r && p.c === interactionTile.c)
@@ -231,15 +232,22 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
         }
 
         let spawnType = null
-      if (group.coords.length >= 5) spawnType = 'observer'
-      else if (group.hasIntersection) spawnType = 'pulse'
-      else if (group.coords.length === 4) spawnType = group.orientation === 'horizontal' ? 'linear-v' : 'linear-h'
+        if (group.coords.length >= 5) spawnType = 'observer'
+        else if (group.hasIntersection) spawnType = 'pulse'
+        else if (group.coords.length === 4) spawnType = group.orientation === 'horizontal' ? 'linear-v' : 'linear-h'
 
         group.coords.forEach(({ r, c }) => {
           const tile = gridState[r][c]
-          if (tile?.special) triggerSpecial(r, c, tile.special, tile.type, gridState).forEach(p => toClear.add(`${p.r},${p.c}`))
+          if (tile?.special) {
+            if (tile.special === 'linear-h' || tile.special === 'linear-v') {
+              groupPoints += 500 // Bonus points for triggering linear tiles
+            }
+            triggerSpecial(r, c, tile.special, tile.type, gridState).forEach(p => toClear.add(`${p.r},${p.c}`))
+          }
           toClear.add(`${r},${c}`)
         })
+        
+        totalPoints += groupPoints
 
         if (spawnType) {
           nextGrid[spawnPos.r][spawnPos.c] = {
@@ -255,8 +263,9 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
         if (!nextGrid[r][c] || nextGrid[r][c].id === gridState[r][c]?.id) nextGrid[r][c] = null
       })
 
+      const pointsToAward = totalPoints
       setScore(prev => {
-        const nextScore = prev + totalPoints
+        const nextScore = prev + pointsToAward
         scoreRef.current = nextScore
         if (currentSequence && nextScore >= currentSequence.objective.target) setIsWin(true)
         return nextScore
@@ -326,6 +335,44 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
           if (finalGrid[r][c]?.type === target.type) finalGrid[r][c] = null
         }
       }
+      setGrid(finalGrid)
+      await new Promise(res => setTimeout(res, 400))
+      await processGridLogic(finalGrid)
+      return
+    }
+
+    const isT1Linear = t1.special === 'linear-h' || t1.special === 'linear-v'
+    const isT2Linear = t2.special === 'linear-h' || t2.special === 'linear-v'
+
+    if (isT1Linear && isT2Linear) {
+      if (mode === 'conviction') setMovesLeft(prev => prev - 1)
+      let finalGrid = grid.map(row => [...row])
+      
+      const toClear = new Set()
+      
+      for (let i = 0; i < GRID_SIZE; i++) {
+        toClear.add(`${tile1.r},${i}`)
+        toClear.add(`${i},${tile1.c}`)
+        toClear.add(`${tile2.r},${i}`)
+        toClear.add(`${i},${tile2.c}`)
+      }
+      
+      let comboPoints = 0
+      toClear.forEach(pos => {
+        const [r, c] = pos.split(',').map(Number)
+        if (finalGrid[r][c]) {
+          comboPoints += 100
+          finalGrid[r][c] = null
+        }
+      })
+      
+      setScore(prev => {
+        const nextScore = prev + comboPoints
+        scoreRef.current = nextScore
+        if (currentSequence && nextScore >= currentSequence.objective.target) setIsWin(true)
+        return nextScore
+      })
+      
       setGrid(finalGrid)
       await new Promise(res => setTimeout(res, 400))
       await processGridLogic(finalGrid)
