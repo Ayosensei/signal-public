@@ -115,7 +115,7 @@ const SettingsPage = ({ audioSettings, setAudioSettings, onClose, onResetProgres
             <h2 className="section-header">EXTERNAL_UPLINKS</h2>
             <div className="links-grid">
               <a href="https://x.com/cloverboys777?s=21" className="link-item">X_FEED</a>
-              <a href="https://t.me/+fYbfV-lm0co4MDFh" className="link-item">TELEGRAM</a>
+              <a href="https://t.me/+OG_MlJ7hWlc5Mzgx" className="link-item">TELEGRAM</a>
               <a href="#" className="link-item">DEX_SCREENER</a>
               <a href="https://cloverboys.vercel.app/#manifesto" className="link-item">MANIFESTO</a>
             </div>
