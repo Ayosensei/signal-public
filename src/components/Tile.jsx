@@ -1,15 +1,6 @@
 import React, { memo } from 'react'
 import { motion } from 'framer-motion'
 
-const TILE_ASSETS = [
-  'Alpha.png',
-  'Clover.png',
-  'Eyes.png',
-  'Lightbulb.png',
-  'Signal Node.png',
-  'Mr Observer.png'
-]
-
 const Tile = memo(({ 
   r, 
   c, 
@@ -20,6 +11,9 @@ const Tile = memo(({
 }) => {
   if (!tile) return null
   const tileType = tile.type
+
+  // Use wildcard/gem specific classing
+  const isWildcard = tileType === 5 || tile?.special === 'observer'
 
   return (
     <motion.div
@@ -52,7 +46,7 @@ const Tile = memo(({
         gridColumn: c + 1,
         touchAction: 'none'
       }}
-      className={`tile tile-${tileType} ${tile?.special ? 'special-' + tile.special : ''} ${tileType === 5 ? 'special-observer' : ''} ${isSelected ? 'selected' : ''}`}
+      className={`tile tile-${tileType} ${tile?.special ? 'special-' + tile.special : ''} ${isWildcard ? 'special-wildcard' : ''} ${isSelected ? 'selected' : ''}`}
       onPointerDown={(e) => onPointerDown(e, r, c)}
       draggable={false}
       data-row={r}
@@ -60,12 +54,7 @@ const Tile = memo(({
     >
       <div className="tile-icon">
         {tileType !== null && (
-          <img
-            src={`/tiles/${TILE_ASSETS[tileType]}`}
-            alt={`Tile ${tileType}`}
-            className="tile-img"
-            draggable={false}
-          />
+          <div className={`css-shape shape-${tileType}`}></div>
         )}
       </div>
     </motion.div>

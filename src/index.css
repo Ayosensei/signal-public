@@ -466,32 +466,63 @@ body {
   --tile-glow: #FA5128;
 }
 
-/* Alpha */
+/* Gem 2 */
 .tile-1 {
   --tile-glow: #37A834;
 }
 
-/* Clover */
+/* Diamond */
 .tile-2 {
   --tile-glow: #60A5FA;
 }
 
-/* Eyes */
+/* Triangle */
 .tile-3 {
   --tile-glow: #FACC15;
 }
 
-/* Lightbulb */
+/* Hexagon */
 .tile-4 {
   --tile-glow: #FFFFFF;
 }
 
-/* Mr Observer (Bright white for rare contrast) */
+/* Wildcard Star */
 .tile-5 {
   --tile-glow: #C084FC;
 }
 
-/* Signal Node */
+/* --- CSS Shapes --- */
+.css-shape {
+  width: 70%;
+  height: 70%;
+  background-color: var(--tile-glow);
+  box-shadow: 0 0 15px var(--tile-glow), inset 0 0 10px rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.shape-0 {
+  border-radius: 20%; /* Rounded Square */
+}
+.shape-1 {
+  border-radius: 50%; /* Circle */
+}
+.shape-2 {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* Diamond */
+  border-radius: 0;
+}
+.shape-3 {
+  clip-path: polygon(50% 15%, 0% 100%, 100% 100%); /* Triangle */
+  border-radius: 0;
+}
+.shape-4 {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); /* Hexagon */
+  border-radius: 0;
+}
+.shape-5 {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); /* Star */
+  background-color: #FFFFFF;
+  box-shadow: 0 0 25px #FFFFFF, inset 0 0 15px #C084FC;
+}
 
 .tile-icon {
   filter: drop-shadow(0 0 10px var(--tile-glow));
