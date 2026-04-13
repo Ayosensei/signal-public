@@ -5,7 +5,7 @@ const AboutPage = ({ onClose }) => {
     <div className="about-overlay" onClick={onClose}>
       <div className="about-card" onClick={(e) => e.stopPropagation()}>
         <div className="card-header">
-          <div className="logo-text">SIGNAL</div>
+          <div className="logo-text">REACT MATCH-3 ENGINE</div>
           <div className="close-card" onClick={onClose}>✕</div>
         </div>
 

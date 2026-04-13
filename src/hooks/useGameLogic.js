@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 
 const GRID_SIZE = 8
 const NORMAL_TILE_TYPES = 5
-const OBSERVER_TYPE = 5
+const WILDCARD_TYPE = 5
 
 export const useGameLogic = (mode = 'observation', levelConfig = null) => {
   // --- 1. STATE HOOKS ---
@@ -27,7 +27,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
   const getRandomTileType = () => {
     const r = Math.random()
     if (r < 0.18) return 0
-    if (r < 0.43) return 1 // Clover (25%)
+    if (r < 0.43) return 1 // Gem 2 (25%)
     if (r < 0.62) return 2
     if (r < 0.81) return 3
     return 4
@@ -41,7 +41,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
       for (let c = 0; c < GRID_SIZE; c++) {
         const current = currentGrid[r][c]
         const next = c < GRID_SIZE - 1 ? currentGrid[r][c + 1] : null
-        if (current && next && current.type === next.type && current.type !== null && current.type !== OBSERVER_TYPE) {
+        if (current && next && current.type === next.type && current.type !== null && current.type !== WILDCARD_TYPE) {
           matchCount++
         } else {
           if (matchCount >= 3) {
@@ -58,7 +58,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
       for (let r = 0; r < GRID_SIZE; r++) {
         const current = currentGrid[r][c]
         const next = r < GRID_SIZE - 1 ? currentGrid[r + 1][c] : null
-        if (current && next && current.type === next.type && current.type !== null && current.type !== OBSERVER_TYPE) {
+        if (current && next && current.type === next.type && current.type !== null && current.type !== WILDCARD_TYPE) {
           matchCount++
         } else {
           if (matchCount >= 3) {
@@ -121,8 +121,8 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
             nextGrid[r][c] = t2
             nextGrid[r][c + 1] = t1
             if (findMatchGroups(nextGrid).length > 0) return true
-            // Support observer swaps
-            if (t1.type === OBSERVER_TYPE || t2.type === OBSERVER_TYPE) return true
+            // Support wildcard swaps
+            if (t1.type === WILDCARD_TYPE || t2.type === WILDCARD_TYPE) return true
             // Support linear combos
             const isT1Linear = t1.special === 'linear-h' || t1.special === 'linear-v'
             const isT2Linear = t2.special === 'linear-h' || t2.special === 'linear-v'
@@ -138,8 +138,8 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
             nextGrid[r][c] = t2
             nextGrid[r + 1][c] = t1
             if (findMatchGroups(nextGrid).length > 0) return true
-            // Support observer swaps
-            if (t1.type === OBSERVER_TYPE || t2.type === OBSERVER_TYPE) return true
+            // Support wildcard swaps
+            if (t1.type === WILDCARD_TYPE || t2.type === WILDCARD_TYPE) return true
             // Support linear combos
             const isT1Linear = t1.special === 'linear-h' || t1.special === 'linear-v'
             const isT2Linear = t2.special === 'linear-h' || t2.special === 'linear-v'
@@ -196,7 +196,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
           for (let j = c - 1; j <= c + 1; j++) 
             if (i >= 0 && i < GRID_SIZE && j >= 0 && j < GRID_SIZE) affected.add(`${i},${j}`)
       }
-      else if (special === 'observer') {
+      else if (special === 'wildcard') {
         for (let i = 0; i < GRID_SIZE; i++) 
           for (let j = 0; j < GRID_SIZE; j++) 
             if (grid[i][j]?.type === type) affected.add(`${i},${j}`)
@@ -210,7 +210,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     const evaluate = async (gridState, firstTrigger = false) => {
       const groups = findMatchGroups(gridState)
       if (groups.length === 0) {
-        // Check for empty spaces anyway (critical for Observer clears)
+        // Check for empty spaces anyway (critical for Wildcard clears)
         const hasNulls = gridState.some(row => row.some(tile => tile === null))
         if (hasNulls) {
           await applyGravity(gridState)
@@ -241,7 +241,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
         }
 
         let spawnType = null
-        if (group.coords.length >= 5) spawnType = 'observer'
+        if (group.coords.length >= 5) spawnType = 'wildcard'
         else if (group.hasIntersection) spawnType = 'pulse'
         else if (group.coords.length === 4) spawnType = group.orientation === 'horizontal' ? 'linear-v' : 'linear-h'
 
@@ -261,7 +261,7 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
         if (spawnType) {
           nextGrid[spawnPos.r][spawnPos.c] = {
             id: getNextId(),
-            type: spawnType === 'observer' ? OBSERVER_TYPE : group.type,
+            type: spawnType === 'wildcard' ? WILDCARD_TYPE : group.type,
             special: spawnType
           }
         }
@@ -326,14 +326,14 @@ export const useGameLogic = (mode = 'observation', levelConfig = null) => {
     const t1 = grid[tile1.r][tile1.c]
     const t2 = grid[tile2.r][tile2.c]
 
-    if (t1.type === OBSERVER_TYPE || t2.type === OBSERVER_TYPE) {
+    if (t1.type === WILDCARD_TYPE || t2.type === WILDCARD_TYPE) {
       if (mode === 'conviction') setMovesLeft(prev => prev - 1)
-      const observer = t1.type === OBSERVER_TYPE ? t1 : t2
-      const target = t1.type === OBSERVER_TYPE ? t2 : t1
+      const observer = t1.type === WILDCARD_TYPE ? t1 : t2
+      const target = t1.type === WILDCARD_TYPE ? t2 : t1
       let finalGrid = grid.map(row => [...row])
       finalGrid[tile1.r][tile1.c] = null; finalGrid[tile2.r][tile2.c] = null;
 
-      if (target.type === OBSERVER_TYPE) {
+      if (target.type === WILDCARD_TYPE) {
         for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) finalGrid[r][c] = null
       } else if (target.special) {
         for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) {
